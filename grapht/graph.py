@@ -1,7 +1,11 @@
 __author__ = 'willmcginnis'
 from scipy.sparse import lil_matrix, triu
+from scipy.optimize import differential_evolution
 import numpy as np
 import copy
+import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+import random
 
 class BaseGraph(object):
 
@@ -19,14 +23,14 @@ class BaseGraph(object):
 
         delta = delta + self.a
         delta.setdiag(0, k=0)
-        return triu(delta).sign()
+        return delta.sign()
 
     def get_dense(self):
         """
 
         """
 
-        return triu(self.a).toarray()
+        return self.a.toarray()
 
     def get_connections(self, k):
         """
@@ -41,6 +45,18 @@ class BaseGraph(object):
         """
 
         return self.a.getnnz()
+
+    @staticmethod
+    def connectedness(subset, self):
+        """
+        Returns the relative connectedness of a subset of nodes.
+
+        """
+        connections = self.get_connections(int(subset[0])) * -1.0
+        for idx, node in enumerate(subset):
+            if idx > 0:
+                connections = connections.minimum(self.get_connections(int(node)) * -1.0)
+        return connections.sum()
 
     def __repr__(self):
         return str(self.a)
@@ -92,6 +108,7 @@ class StreamGraph(BaseGraph):
         :return:
 
         """
+        self.max_dim = max_dim
         self.a = lil_matrix((max_dim, max_dim), dtype=np.int8)
 
     def append(self, a, b):
@@ -105,5 +122,36 @@ class StreamGraph(BaseGraph):
         """
 
         self.a[a, b] = 1
-        self.a[b, a] = 1
+
+    def most_connected_n(self, n=10):
+        bounds = [(0, self.max_dim) for _ in range(n)]
+        result = differential_evolution(self.connectedness, bounds=bounds, args=(self, ), maxiter=10, popsize=25)
+        return result
+
+    def from_psql(self, username, password, database, host, schema, table, follower='follower', followee='followee'):
+        """
+        Will create a graph from a postgresql table with 2 columns.
+
+        :param username:
+        :param password:
+        :param database:
+        :param host:
+        :param schema:
+        :param table:
+        :return:
+        """
+
+        conn = psycopg2.connect(database=database, user=username, password=password, host=host, connect_timeout=60)
+        conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        curr = conn.cursor()
+
+        sql = 'SELECT %s, %s from %s.%s' % (follower, followee, schema, table)
+        curr.execute(sql)
+        for a, b in curr.fetchall():
+            self.append(a, b)
+
+        curr.close()
+        conn.close()
+
+        return self
 

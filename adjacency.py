@@ -19,17 +19,24 @@ if __name__ == '__main__':
     print(gp.get_n_connection(n=3).toarray())
 
     print('\n\nStream Graph')
-    gp2 = StreamGraph(max_dim=10000001)
-    for _ in range(1000000):
-        a = random.randint(0, 10000000)
-        b = random.randint(0, 10000000)
-        gp2.append(a, b)
+    gp2 = StreamGraph(max_dim=28000000)
+    gp2.from_psql(username='postgres',
+                  password='admin',
+                  database='',
+                  host='localhost',
+                  schema='directed',
+                  table='graph')
 
     print('Number of non-zero elements')
-    print(gp2.get_nnz())
+    edges = gp2.get_nnz()
+    print(edges)
 
-    print('Calculating 4th Degree connections for a 1,000,000 edge, 10,000,000 node graph')
+    print('Calculating 2nd Degree connections for a %s edge graph' % (edges, ))
     start_time = time.time()
-    temp = gp2.get_n_connection(n=4)
+    temp = gp2.get_n_connection(n=2)
     elapsed = time.time() - start_time
     print('TIME: %s' % (str(elapsed), ))
+
+    print('\nMost Connected N')
+    res = gp2.most_connected_n(n=25)
+    print(res)
