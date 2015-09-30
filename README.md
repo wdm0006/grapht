@@ -24,7 +24,7 @@ Once assembled, you can do a few things (not a ton):
 Example
 -------
 
-More detail at: `this site <http://willmcginnis.com/2015/09/29/grapht-graph-connectedness-and-dimensionality/>`_
+More detail at: [this site](http://willmcginnis.com/2015/09/29/grapht-graph-connectedness-and-dimensionality/)
 
 Code:
 
