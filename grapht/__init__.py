@@ -1,5 +1,5 @@
+from grapht.graph import DictGraph, StreamGraph, DenseGraph
+
 __author__ = 'willmcginnis'
 
-from grapht.graph import DictGraph, StreamGraph
-
-__all__ = ['DictGraph', 'StreamGraph']
+__all__ = ['DictGraph', 'StreamGraph', 'DenseGraph']

@@ -1,2 +1,5 @@
 scipy==0.16.0
 numpy==1.9.0
+psycopg2
+pandas
+matplotlib

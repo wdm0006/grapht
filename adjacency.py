@@ -1,8 +1,7 @@
-__author__ = 'willmcginnis'
-import random
 import time
-
 from grapht.graph import DictGraph, StreamGraph
+
+__author__ = 'willmcginnis'
 
 if __name__ == '__main__':
     print('DictGraph')

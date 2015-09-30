@@ -1,18 +1,30 @@
-__author__ = 'willmcginnis'
-from scipy.sparse import lil_matrix, triu
+from scipy.sparse import lil_matrix
 from scipy.optimize import differential_evolution
 import numpy as np
 import copy
 import psycopg2
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-import random
+
+__author__ = 'willmcginnis'
+
 
 class BaseGraph(object):
+    """
+
+    Base object for a graph, contains most interfaces with a graph once it's been created. Various other classes will
+    inherit from this in order to gain that, while retaining differentiation in how the graph is created. The core
+    functionality here is the storing of a simple graph in a scipy sparse adjacency matrix.
+
+    """
 
     a = None
 
     def get_n_connection(self, n=2):
         """
+        This function will calculate the n-hop version of the adjacency matrix using a simple chained dot-product. The
+        diagonal will always be 0s.
+
+        Returns a scipy sparse matrix.
 
         """
 
@@ -27,6 +39,7 @@ class BaseGraph(object):
 
     def get_dense(self):
         """
+        Returns the adjacency matrix of the submitted graph in dense form (be careful with high dimension graphs).
 
         """
 
@@ -34,6 +47,7 @@ class BaseGraph(object):
 
     def get_connections(self, k):
         """
+        Returns a sparse vector indicting all connections that a certain node has.
 
         """
 
@@ -41,9 +55,11 @@ class BaseGraph(object):
 
     def get_nnz(self):
         """
+        Returns the number of edges in the graph. (number of nonzero
 
         """
 
+        self.a.setdiag(0, k=0)
         return self.a.getnnz()
 
     @staticmethod
@@ -97,6 +113,22 @@ class DictGraph(BaseGraph):
                 a[con, key] = 1
 
         return a
+
+
+class DenseGraph(BaseGraph):
+    """
+    """
+    def __init__(self, adj_matrix):
+        """
+        An object for creating graphs from a dictionary of the form: {node: [connections]}.
+
+        :param graph_dict: dict
+        :return:
+
+        """
+
+        self.a = lil_matrix(adj_matrix)
+
 
 class StreamGraph(BaseGraph):
     def __init__(self, max_dim):
