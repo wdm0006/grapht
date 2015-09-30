@@ -62,8 +62,7 @@ class BaseGraph(object):
         self.a.setdiag(0, k=0)
         return self.a.getnnz()
 
-    @staticmethod
-    def connectedness(subset, self):
+    def connectedness(self, subset):
         """
         Returns the relative connectedness of a subset of nodes.
 

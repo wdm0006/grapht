@@ -18,6 +18,8 @@ if __name__ == '__main__':
     print(gp.get_n_connection(n=3).toarray())
 
     print('\n\nStream Graph')
+
+    # NOTE: You'll need a graph in a postgres db to actually do this.
     gp2 = StreamGraph(max_dim=28000000)
     gp2.from_psql(username='postgres',
                   password='admin',
