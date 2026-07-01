@@ -2,8 +2,6 @@ from scipy.sparse import lil_matrix
 from scipy.optimize import differential_evolution
 import numpy as np
 import copy
-import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 __author__ = 'willmcginnis'
 
@@ -171,6 +169,9 @@ class StreamGraph(BaseGraph):
         :param table:
         :return:
         """
+
+        import psycopg2
+        from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
         conn = psycopg2.connect(database=database, user=username, password=password, host=host, connect_timeout=60)
         conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
