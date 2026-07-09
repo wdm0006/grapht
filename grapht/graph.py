@@ -53,12 +53,13 @@ class BaseGraph(object):
 
     def get_nnz(self):
         """
-        Returns the number of edges in the graph. (number of nonzero
+        Returns the number of edges in the graph (number of off-diagonal
+        nonzero entries in the adjacency matrix). This is a pure read and does
+        not modify the stored graph.
 
         """
 
-        self.a.setdiag(0, k=0)
-        return self.a.getnnz()
+        return self.a.getnnz() - int(np.count_nonzero(self.a.diagonal()))
 
     def connectedness(self, subset):
         """
