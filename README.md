@@ -75,6 +75,19 @@ Plot:
 ![grapht](https://github.com/wdm0006/grapht/blob/master/plots/connectedness.png "Grapht Example Plot")
 
 
+Development
+-----------
+
+The test suite lives in `tests/` and covers the core, pure graph operations (no
+database required). Run it with [uv](https://docs.astral.sh/uv/):
+
+    uv run --with scipy --with numpy --with pytest pytest tests/ -q
+
+or, with the dependencies already installed, simply:
+
+    pytest
+
+
 License
 -------
 
