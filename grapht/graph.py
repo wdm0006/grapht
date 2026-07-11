@@ -155,7 +155,7 @@ class StreamGraph(BaseGraph):
 
     def most_connected_n(self, n=10):
         bounds = [(0, self.max_dim) for _ in range(n)]
-        result = differential_evolution(self.connectedness, bounds=bounds, args=(self, ), maxiter=10, popsize=25)
+        result = differential_evolution(self.connectedness, bounds=bounds, maxiter=10, popsize=25)
         return result
 
     def from_psql(self, username, password, database, host, schema, table, follower='follower', followee='followee'):
