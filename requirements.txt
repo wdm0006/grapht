@@ -1,5 +1,13 @@
-scipy==0.16.0
-numpy==1.9.0
-psycopg2
-pandas
-matplotlib
+# Packaging metadata now lives in pyproject.toml (PEP 621) — this file is kept
+# only as a convenience for `pip install -r`. Prefer `pip install .`.
+#
+# Core runtime deps (also declared in pyproject.toml):
+scipy>=1
+numpy>=1.21
+#
+# Optional: Postgres input source for StreamGraph.from_psql (extra "psql"):
+# psycopg2-binary
+#
+# Only needed to run examples/density.py:
+# pandas
+# matplotlib
