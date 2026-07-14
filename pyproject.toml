@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grapht"
+version = "0.0.1"
+description = "A toy project for playing with graphs and networks."
+readme = "README.md"
+license = { text = "BSD" }
+authors = [{ name = "willmcginnis" }]
+requires-python = ">=3.9"
+dependencies = [
+    "scipy>=1",
+    "numpy>=1.21",
+]
+
+[project.optional-dependencies]
+psql = ["psycopg2-binary"]
+
+[project.urls]
+Homepage = "https://github.com/wdm0006/grapht"
+
+[tool.setuptools]
+packages = ["grapht"]
