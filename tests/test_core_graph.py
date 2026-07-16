@@ -74,15 +74,49 @@ def test_get_n_connection_one_hop_on_path():
 def test_get_n_connection_two_hops_on_path():
     graph = DictGraph({0: [1], 1: [0, 2], 2: [1, 3], 3: [2]})
 
+    # n=2 accumulates path lengths 1..3, so every node on the 4-node path is
+    # reachable from every other (max distance is 3). Intermediate hops (A^2)
+    # are no longer dropped, so this is the fully-connected off-diagonal matrix.
     expected = np.array(
         [
-            [0, 1, 0, 1],
-            [1, 0, 1, 0],
-            [0, 1, 0, 1],
-            [1, 0, 1, 0],
+            [0, 1, 1, 1],
+            [1, 0, 1, 1],
+            [1, 1, 0, 1],
+            [1, 1, 1, 0],
         ],
         dtype=np.int8,
     )
     result = graph.get_n_connection(n=2).toarray()
     np.testing.assert_array_equal(result, expected)
     assert np.all(np.diag(result) == 0)
+
+
+def test_get_n_connection_two_hops_on_directed_chain():
+    # Directed chain 0 -> 1 -> 2 -> 3. Undirected parity can hide a missing
+    # intermediate hop, so assert on a directed graph: from node 0, all of
+    # 1 (1 hop), 2 (2 hops) and 3 (3 hops) must be reachable at n=2.
+    adj = np.array(
+        [
+            [0, 1, 0, 0],
+            [0, 0, 1, 0],
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+        ],
+        dtype=np.int8,
+    )
+    graph = DenseGraph(adj)
+
+    expected = np.array(
+        [
+            [0, 1, 1, 1],
+            [0, 0, 1, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 0],
+        ],
+        dtype=np.int8,
+    )
+    result = graph.get_n_connection(n=2).toarray()
+    np.testing.assert_array_equal(result, expected)
+    assert np.all(np.diag(result) == 0)
+    # Node 2 (the intermediate hop) is present, not dropped.
+    assert result[0, 2] == 1

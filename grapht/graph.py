@@ -22,16 +22,21 @@ class BaseGraph(object):
         This function will calculate the n-hop version of the adjacency matrix using a simple chained dot-product. The
         diagonal will always be 0s.
 
+        Every path length from 1 through ``n + 1`` is accumulated, so an entry is non-zero whenever one node can reach
+        another in at most ``n + 1`` hops. ``n=0`` returns the direct adjacency; each further increment of ``n`` adds one
+        more reachable hop without dropping the shorter ones.
+
         Returns a scipy sparse matrix.
 
         """
 
+        power = copy.deepcopy(self.a)
         delta = copy.deepcopy(self.a)
 
         for _ in range(n):
-            delta = delta.dot(self.a).sign()
+            power = power.dot(self.a).sign()
+            delta = (delta + power).sign()
 
-        delta = delta + self.a
         delta.setdiag(0, k=0)
         return delta.sign()
 
