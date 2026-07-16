@@ -159,8 +159,23 @@ class StreamGraph(BaseGraph):
         self.a[a, b] = 1
 
     def most_connected_n(self, n=10):
-        bounds = [(0, self.max_dim) for _ in range(n)]
-        result = differential_evolution(self.connectedness, bounds=bounds, maxiter=10, popsize=25)
+        if n < 1 or n > self.max_dim:
+            raise ValueError("n must be between 1 and max_dim")
+
+        def distinct_connectedness(subset):
+            if len(set(subset)) != n:
+                return np.inf
+            return self.connectedness(subset)
+
+        bounds = [(0, self.max_dim - 1) for _ in range(n)]
+        result = differential_evolution(
+            distinct_connectedness,
+            bounds=bounds,
+            integrality=True,
+            x0=np.arange(n),
+            maxiter=10,
+            popsize=25,
+        )
         return result
 
     def from_psql(self, username, password, database, host, schema, table, follower='follower', followee='followee'):
@@ -192,4 +207,3 @@ class StreamGraph(BaseGraph):
         conn.close()
 
         return self
-
