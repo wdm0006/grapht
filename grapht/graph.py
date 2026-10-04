@@ -38,7 +38,7 @@ class BaseGraph(object):
             delta = (delta + power).sign()
 
         delta.setdiag(0, k=0)
-        return delta.sign()
+        return delta.tocsr().sign()
 
     def get_dense(self):
         """

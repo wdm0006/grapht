@@ -53,6 +53,34 @@ def test_get_connections_returns_node_row():
     )
 
 
+def test_get_n_connection_zero_hops_returns_direct_adjacency():
+    graph = StreamGraph(4)
+    graph.append(0, 0)
+    graph.append(0, 1)
+    graph.append(1, 2)
+    original = graph.get_dense().copy()
+
+    result = graph.get_n_connection(n=0)
+
+    expected = np.array(
+        [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 0], [0, 0, 0, 0]],
+        dtype=np.int8,
+    )
+    np.testing.assert_array_equal(result.toarray(), expected)
+    np.testing.assert_array_equal(graph.get_dense(), original)
+    result[0, 1] = 0
+    np.testing.assert_array_equal(graph.get_dense(), original)
+
+
+def test_get_n_connection_zero_hops_binarizes_adjacency():
+    adj = np.array([[3, 2, 0], [0, 0, 5], [0, 0, 4]], dtype=np.int8)
+    graph = DenseGraph(adj)
+
+    expected = np.array([[0, 1, 0], [0, 0, 1], [0, 0, 0]], dtype=np.int8)
+    np.testing.assert_array_equal(graph.get_n_connection(n=0).toarray(), expected)
+    np.testing.assert_array_equal(graph.get_dense(), adj)
+
+
 def test_get_n_connection_one_hop_on_path():
     graph = DictGraph({0: [1], 1: [0, 2], 2: [1, 3], 3: [2]})
 
