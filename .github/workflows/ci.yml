@@ -28,3 +28,26 @@ jobs:
 
       - name: Run tests
         run: uv run --with scipy --with numpy --with pytest pytest tests/ -q
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Build wheel and sdist
+        run: uv build
+
+      - name: Import the built wheel from outside the checkout
+        working-directory: ${{ runner.temp }}
+        run: >
+          uv run --isolated --no-project
+          --with "$(ls "$GITHUB_WORKSPACE"/dist/grapht-*.whl)"
+          python -c "import grapht; from grapht import DictGraph, StreamGraph, DenseGraph; print(grapht.__file__)"
