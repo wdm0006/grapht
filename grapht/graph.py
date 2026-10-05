@@ -156,6 +156,8 @@ class StreamGraph(BaseGraph):
 
         """
 
+        if a < 0 or b < 0:
+            raise IndexError("node indices must be non-negative")
         self.a[a, b] = 1
 
     def most_connected_n(self, n=10):
