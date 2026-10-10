@@ -108,7 +108,18 @@ class DictGraph(BaseGraph):
 
         """
 
-        a = lil_matrix((len(graph.keys()), len(graph.keys())), dtype=np.int8)
+        n = len(graph)
+
+        def check(node, role):
+            if isinstance(node, bool) or not isinstance(node, (int, np.integer)) or not 0 <= node < n:
+                raise ValueError('%s %r is not an integer node index in 0..%d' % (role, node, n - 1))
+
+        for key in graph.keys():
+            check(key, 'key')
+            for con in graph[key]:
+                check(con, 'connection of key %r:' % (key,))
+
+        a = lil_matrix((n, n), dtype=np.int8)
 
         for key in graph.keys():
             for con in graph[key]:
@@ -129,6 +140,12 @@ class DenseGraph(BaseGraph):
         :return:
 
         """
+
+        shape = getattr(adj_matrix, 'shape', None)
+        if shape is None:
+            shape = np.shape(adj_matrix)
+        if len(shape) != 2 or shape[0] != shape[1]:
+            raise ValueError('adj_matrix must be a 2-D square matrix, got shape %s' % (tuple(shape),))
 
         self.a = lil_matrix(adj_matrix)
 
